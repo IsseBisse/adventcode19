@@ -1,10 +1,11 @@
 class Program:
 
-	def __init__(self):
+	def __init__(self, memory_size):
 		
-		self.code = []
+		self.code = [0] * memory_size
 		self.p = 0
 		self.done = False
+		self.relative_base = 0
 		
 		self.input_ = []
 		self.output = []
@@ -22,7 +23,7 @@ class Program:
 		self.code[pos] = self.input_.pop()
 
 	def output(self, pos):
-		self.output = self.code[pos]
+		self.output.append(self.code[pos])
 
 	def jt(self, pos, new_p):
 		if self.code[pos] != 0:
@@ -44,6 +45,9 @@ class Program:
 		else:
 			self.code[pos] = 0
 
+	def base(self, pos):
+		self.relative_base = self.code[pos]
+
 	INSTRUCTIONS = {1: {"func": add, "n_arg": 3},
 	2: {"func": mult, 	"n_arg": 3},
 	3: {"func": input_, "n_arg": 1},
@@ -52,6 +56,7 @@ class Program:
 	6: {"func": jf, 	"n_arg": 2},
 	7: {"func": lt, 	"n_arg": 3},
 	8: {"func": eq, 	"n_arg": 3},
+	9: {"func": base,	"n_arg": 1},
 	99: {"func": "b", 	"n_arg": 0}}
 
 	'''
@@ -84,20 +89,24 @@ class Program:
 			if parameter_modes[i] == 0:
 				params.append(self.code[param_p])
 
-			else:
+			elif parameter_modes[i] == 1:
 				params.append(param_p)
+
+			else:
+				params.append(self.code[param_p] + self.relative_base)
 
 			param_p += 1
 
 		func = self.INSTRUCTIONS[command]["func"]
-		#print(func, params)
+		print(func, params, self.relative_base)
 
 		func(self, *params)
 
 	def load_code(self, path):
 
 		f = open(path, "r")
-		self.code = [int(x) for x in  f.read().split(",")]
+		code = [int(x) for x in  f.read().split(",")]
+		self.code[:len(code)] = code
 
 	def load_input(self, input_):
 
@@ -122,7 +131,7 @@ class Program:
 
 		while True:	
 			command, parameter_modes = self.interpret()
-			#print(command, parameter_modes)
+			print(command, parameter_modes)
 
 			if command == 99:
 				self.done = True
@@ -130,6 +139,3 @@ class Program:
 
 			self.execute(command, parameter_modes)
 			self.p += self.INSTRUCTIONS[command]["n_arg"] + 1
-
-			if command == 4:
-				break

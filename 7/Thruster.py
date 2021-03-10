@@ -49,7 +49,7 @@ def part_two():
 			program[i].run()
 			output = program[i].get_output()
 
-			print("Output: %d from %d with phase %d" % (output, i, phase))
+			#print("Output: %d from %d with phase %d" % (output, i, phase))
 
 		# Run until done
 		i = 0
@@ -61,13 +61,13 @@ def part_two():
 
 			i = (i + 1) % 5
 
-			print([x.is_done() for x in program])
-			print("Output: %d from %d" % (output, i, phase))
+			#print([x.is_done() for x in program])
+			#print("Output: %d from %d" % (output, i))
 
 		if output > max_output:
 			max_output = output
 
-
+	print("Max output is: %d" % max_output)
 
 if __name__ == '__main__':
 	#part_one()
